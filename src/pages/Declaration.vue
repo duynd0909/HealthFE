@@ -151,7 +151,7 @@
             </a-row>
           </a-card>
 
-          <a-card title="Phương tiện - Biển số:" :style="{ marginTop: '16px' }">
+          <a-card title="Thông tin cư trú:" :style="{ marginTop: '16px' }">
             <a-row type="flex">
               <a-col class="gutter-box" flex="1 1 200px">
                 <a-form-item label="Tỉnh thành" has-feedback>

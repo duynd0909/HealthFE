@@ -10,7 +10,10 @@ function getReportsByUsername(username) {
     `${API_HEALTH_REPORT}/get-report-by-username?username=${username}`
   );
 }
-
+export async function checkPermissionViewReport() {
+  let res = await axios.get(`${API_HEALTH_REPORT}/get-allow-view-report`);
+  return res.data.data;
+}
 function searchUserReport(form, pageIndex) {
   return axios.post(
     `${API_HEALTH_REPORT}/search?pageIndex=${pageIndex}&pageSize=${pageSize}`,

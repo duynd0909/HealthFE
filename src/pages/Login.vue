@@ -10,7 +10,7 @@
             body-classes="px-lg-5 py-lg-5"
             class="border-0"
           >
-            <a-spin :spinning="loading" tip="Đang đăng nhập...">
+            <a-spin :spinning="loading" :tip="contentLoading">
               <a-icon
                 type="loading"
                 slot="indicator"
@@ -18,22 +18,24 @@
                 spin
               />
               <template class="spin-content">
-                <form role="form" class="form-login">
-                  <base-input
+                <form role="form" class="form-login cus-class-login">
+                  <a-input
                     v-model="username"
-                    class="mb-3"
-                    placeholder="Email"
-                    addon-left-icon="ni ni-email-83"
+                    size="large"
+                    class="mb-3 input-login-cus"
+                    placeholder="Tài khoản"
                   >
-                  </base-input>
-                  <base-input
+                    <a-icon slot="prefix" type="user" />
+                  </a-input>
+                  <a-input-password
                     v-model="password"
-                    type="password"
-                    placeholder="Password"
-                    addon-left-icon="ni ni-lock-circle-open"
+                    size="large"
+                    class="input-login-cus"
+                    placeholder="Mật khẩu"
                   >
-                  </base-input>
-                  <base-checkbox> Remember me </base-checkbox>
+                    <a-icon slot="prefix" type="key" />
+                  </a-input-password>
+                  <base-checkbox> Ghi nhớ đăng nhập </base-checkbox>
                   <span v-if="errorLogin" class="red"> {{ errorLogin }} </span>
                   <div class="text-center">
                     <base-button
@@ -42,7 +44,7 @@
                       class="my-4"
                       @click="basicLogin"
                     >
-                      Sign In
+                      Đăng nhập
                     </base-button>
                   </div>
                 </form>
@@ -59,6 +61,7 @@ import { BaseInput, Card } from "@/components/index";
 import { basicProcessLogins } from "../api/processLogin";
 import axios from "axios";
 import Vue from "vue";
+import { processLogout } from "../api/processLogin";
 
 const defaultFormAddUser = {
   account: "",
@@ -86,6 +89,7 @@ export default {
       userData: {},
       formLayout: "horizontal",
       showModalAddUser: false,
+      contentLoading: "",
       errors: {
         account: "",
         category: "",
@@ -107,8 +111,30 @@ export default {
       errorLogin: "",
     };
   },
+  mounted() {
+    this.basicLogout();
+  },
   methods: {
+    async basicLogout() {
+      if (this.$cookies.get("accessToken")) {
+        this.contentLoading = "Đang đăng xuất...";
+        this.loading = true;
+        await processLogout().then(() => {
+          this.$cookies.remove("accessToken");
+          this.$cookies.remove("username");
+          this.$cookies.remove("role");
+          this.$cookies.remove("class");
+          window.location.reload();
+        });
+      } else {
+        this.$cookies.remove("accessToken");
+        this.$cookies.remove("username");
+        this.$cookies.remove("role");
+        this.$cookies.remove("class");
+      }
+    },
     async basicLogin() {
+      this.contentLoading = "Đang đăng nhập...";
       this.loading = true;
       await basicProcessLogins(this.username, this.password)
         .then((res) => {
@@ -151,5 +177,12 @@ export default {
   border: 1px solid #91d5ff;
   background-color: #e6f7ff;
   padding: 30px;
+}
+.input-login-cus .form-control {
+  height: 43px !important;
+  font-size: 16px !important;
+}
+.cus-class-login .form-check .form-check-label {
+  font-size: 14px !important;
 }
 </style>

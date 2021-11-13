@@ -17,7 +17,7 @@
         </div>
         <a class="navbar-brand" href="javascript:void(0)"> {{ $route.name }}</a>
       </div>
-      <button
+      <!-- <button
         class="navbar-toggler"
         type="button"
         @click="toggleMenu"
@@ -29,8 +29,8 @@
         <span class="navbar-toggler-bar navbar-kebab"></span>
         <span class="navbar-toggler-bar navbar-kebab"></span>
         <span class="navbar-toggler-bar navbar-kebab"></span>
-      </button>
-      <div class="collapse navbar-collapse show text-left" v-show="showMenu">
+      </button> -->
+      <!-- <div class="collapse navbar-collapse show text-left" v-show="showMenu">
         <ul class="navbar-nav" :class="$rtl.isRTL ? 'mr-auto' : 'ml-auto'">
           <li class="search-bar input-group" @click="searchModalVisible = true">
             <button
@@ -132,7 +132,7 @@
             </ul>
           </drop-down>
         </ul>
-      </div>
+      </div> -->
     </div>
   </nav>
 </template>

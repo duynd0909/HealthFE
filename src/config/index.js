@@ -1,5 +1,5 @@
 const config = {
-  apiUrl: "http://healthdeclare.hipe.com.vn:8181",
+  apiUrl: "https://back-end-health.herokuapp.com:8181",
   CLIENT_URL: "http://healthdeclare.hipe.com.vn:8080",
   SCREEN_CODE: {
     ROLE_MANAGEMENT: "ROLE_MANAGEMENT",

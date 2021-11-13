@@ -6,6 +6,12 @@ function add(form) {
   return axios.post(`${API_HEALTH_FORM_REPORT}/add`, form);
 }
 
+function getTrackingReportByUsername(username) {
+  return axios.get(
+    `${API_HEALTH_FORM_REPORT}/get-list-by-username?username=${username}`
+  );
+}
 export default {
-  add
+  add,
+  getTrackingReportByUsername,
 };

@@ -133,6 +133,13 @@
                         Xóa
                       </a-popconfirm>
                     </a-menu-item>
+
+                    <a-menu-item
+                      key="3"
+                      @click="handleResetPasswordItemBtnClick(item)"
+                    >
+                      Đặt lại mât khấu
+                    </a-menu-item>
                   </a-menu>
                   <a-button> <a-icon type="down" /> </a-button>
                 </a-dropdown>
@@ -649,6 +656,73 @@
             </a-row>
           </a-spin>
         </a-modal>
+
+        <!-- edit modal -->
+        <a-modal
+          title="Đổi mật khẩu"
+          v-model="showModal.changePassword"
+          :maskClosable="false"
+          :destroyOnClose="true"
+          :closable="false"
+        >
+          <template slot="footer">
+            <a-button
+              key="submit"
+              type="primary"
+              :loading="loadingModal"
+              @click="changePasswordWithUsername"
+            >
+              Thay đổi
+            </a-button>
+            <a-button
+              key="cancel"
+              type="secondary"
+              :disabled="loadingModal"
+              @click="closeEditForm()"
+            >
+              Hủy
+            </a-button>
+          </template>
+
+          <a-spin :spinning="loadingModal">
+            <a-icon
+              type="loading"
+              slot="indicator"
+              style="font-size: 24px"
+              spin
+            />
+            <a-row :gutter="[24, 16]">
+              <a-col :span="8">Tài khoản </a-col>
+              <a-col :span="16">
+                <a-input v-model="changePassForm.username" :disabled="true" />
+              </a-col>
+            </a-row>
+            <a-row :gutter="[24, 16]">
+              <a-col :span="8"
+                >Mật khẩu mới
+                <span class="red">*</span>
+              </a-col>
+              <a-col :span="16">
+                <a-input-password v-model="changePassForm.passwordChanged" />
+                <span v-if="errors.passwordChanged" class="red">
+                  {{ errors.passwordChanged }}
+                </span>
+              </a-col>
+            </a-row>
+            <a-row :gutter="[24, 16]">
+              <a-col :span="8"
+                >Nhập lại
+                <span class="red">*</span>
+              </a-col>
+              <a-col :span="16">
+                <a-input-password v-model="changePassForm.rePasswordChanged" />
+                <span v-if="errors.rePasswordChanged" class="red">
+                  {{ errors.rePasswordChanged }}
+                </span>
+              </a-col>
+            </a-row>
+          </a-spin>
+        </a-modal>
       </div>
     </div>
   </div>
@@ -663,6 +737,7 @@ import moment from "moment";
 const defaultModalState = {
   add: false,
   edit: false,
+  changePassword: false
 };
 
 const defaultForm = {
@@ -687,6 +762,8 @@ const defaultInputErrors = {
   roleCode: "",
   phoneNumber: "",
   parentPhoneNumber: "",
+  passwordChanged: "",
+  rePasswordChanged: "",
 };
 
 export default {
@@ -706,6 +783,11 @@ export default {
       studentList: [],
       current: 1,
       totals: 0,
+      changePassForm: {
+        username: "",
+        passwordChanged: "",
+        rePasswordChanged: "",
+      },
       loading: false,
       formDataSearch: {
         fullName: "",
@@ -1293,6 +1375,66 @@ export default {
           });
           this.loadingModal = false;
         });
+    },
+    handleResetPasswordItemBtnClick(item) {
+      // this.fetchTeacher("");
+      this.selectedItem = item;
+      this.changePassForm.username = item.userName;
+      this.showModal = {
+        changePassword: true,
+      };
+    },
+    validateChangePassword() {
+      let isValid = true;
+      this.errors = { ...defaultInputErrors };
+      if (
+        this.changePassForm.passwordChanged == "" ||
+        this.changePassForm.passwordChanged == null ||
+        this.changePassForm.passwordChanged == undefined
+      ) {
+        this.errors.passwordChanged = requiredError;
+        isValid = false;
+      }
+      if (
+        this.changePassForm.rePasswordChanged == "" ||
+        this.changePassForm.rePasswordChanged == null ||
+        this.changePassForm.rePasswordChanged == undefined
+      ) {
+        this.errors.rePasswordChanged = requiredError;
+        isValid = false;
+      }
+      return isValid;
+    },
+    changePasswordWithUsername() {
+      this.loadingModal = true;
+      const validation = this.validateChangePassword();
+      if (!validation) {
+        this.loadingModal = false;
+        return;
+      }
+      if (
+        this.changePassForm.passwordChanged !==
+        this.changePassForm.rePasswordChanged
+      ) {
+        this.errors.rePasswordChanged = "Mât khẩu không trùng khớp";
+        this.loadingModal = false;
+        return;
+      }
+      let changePasswordForm = {
+        username: this.changePassForm.username,
+        newPassword: this.changePassForm.passwordChanged,
+        confirmPassword: this.changePassForm.rePasswordChanged,
+      };
+      UserRepository.changePasswordByUsername(changePasswordForm).then(res => {
+        if (res.data.success) {
+          this.loadingModal = false;
+          this.$notification.success({
+            message: "Đặt lại mật khẩu thành công!"
+          });
+          this.closeModal();
+          this.loadingModal = false;
+        }
+      });
     },
     deleteSubItemBtnClick(item) {
       this.loading = true;

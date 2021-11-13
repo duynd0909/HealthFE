@@ -35,19 +35,22 @@
         <base-button type="info" icon size="lg" class="btn-facebook">
           <i class="fas fa-qrcode fa-lg"></i>
         </base-button>
+        <br />
         <b>Quản lý QR</b>
       </div>
       <div class="col-4">
         <base-button type="success" @click="goToReport()" icon size="lg">
           <a-icon style type="file-add" />
         </base-button>
+        <br />
         <b>Khai báo</b>
       </div>
       <div class="col-4">
         <base-button type="warning" icon size="lg">
           <a-icon type="message" theme="filled" />
         </base-button>
-        <b> Feedback</b>
+        <br />
+        <b> Phản hồi hệ thống</b>
       </div>
       <a-modal
         title="Chọn khai báo: "

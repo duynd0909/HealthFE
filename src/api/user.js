@@ -59,6 +59,9 @@ function changePasswordByUsername(changePasswordForm) {
     changePasswordForm
   );
 }
+function changeYourPassword(changePasswordForm) {
+  return axios.post(`${API_USER}/change-your-password`, changePasswordForm);
+}
 
 export default {
   getAllUser,
@@ -73,4 +76,5 @@ export default {
   addNewStudent,
   addNewTeacher,
   changePasswordByUsername,
+  changeYourPassword
 };
