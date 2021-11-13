@@ -1106,6 +1106,10 @@ export default {
         link.download = "Danh sách học sinh.xlsx"
 
         link.click()
+        this.$notification.success({
+          message :" Thêm danh sách học sinh thành công !!!"
+        })
+        this.paginate()
       });
     },
     handleCancelImport() {
