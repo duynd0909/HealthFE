@@ -22,7 +22,7 @@ const router = [
   {
     path: "/",
     component: DashboardLayout,
-    redirect: "/home-page",
+    redirect: "/login",
     children: [
       {
         path: "home-page",
@@ -46,7 +46,7 @@ const router = [
       },
       {
         path: "login",
-        name: "Dăng nhập",
+        name: "Đăng nhập",
         component: Login
       },
       {

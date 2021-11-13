@@ -96,7 +96,7 @@ export default {
     },
   },
   created() {
-    this.checkPermissionViewReport()
+    // this.checkPermissionViewReport()
   },
   methods: {
     toggleSidebar() {

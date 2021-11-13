@@ -62,7 +62,13 @@ function changePasswordByUsername(changePasswordForm) {
 function changeYourPassword(changePasswordForm) {
   return axios.post(`${API_USER}/change-your-password`, changePasswordForm);
 }
-
+function exportTemplate() {
+  return axios({
+    url: `${API_USER}/export-template`,
+    method: "POST",
+    responseType: "blob",
+  });
+}
 export default {
   getAllUser,
   searchTeacherByName,
@@ -76,5 +82,6 @@ export default {
   addNewStudent,
   addNewTeacher,
   changePasswordByUsername,
-  changeYourPassword
+  changeYourPassword,
+  exportTemplate
 };

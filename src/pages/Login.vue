@@ -112,7 +112,10 @@ export default {
     };
   },
   mounted() {
-    this.basicLogout();
+    this.$cookies.remove("accessToken");
+    this.$cookies.remove("username");
+    this.$cookies.remove("role");
+    this.$cookies.remove("class");
   },
   methods: {
     async basicLogout() {
@@ -120,6 +123,7 @@ export default {
         this.contentLoading = "Đang đăng xuất...";
         this.loading = true;
         await processLogout().then(() => {
+          this.loading = false;
           this.$cookies.remove("accessToken");
           this.$cookies.remove("username");
           this.$cookies.remove("role");
@@ -127,6 +131,7 @@ export default {
           window.location.reload();
         });
       } else {
+        this.loading = false;
         this.$cookies.remove("accessToken");
         this.$cookies.remove("username");
         this.$cookies.remove("role");

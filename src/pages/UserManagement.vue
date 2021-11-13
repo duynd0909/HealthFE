@@ -49,6 +49,11 @@
                   >Thêm học sinh</base-button
                 >
               </a-col>
+              <a-col class="gutter-box custom-button-header" :span="1">
+                <base-button type="primary" @click="openImportForm()"
+                  >Thêm danh sách học sinh</base-button
+                >
+              </a-col>
             </a-row>
           </a-form>
         </div>
@@ -80,7 +85,7 @@
                 <a-input
                   v-ant-ref="(c) => (searchInput = c)"
                   :value="selectedKeys[0]"
-                  style="width: 188px; margin-bottom: 8px; display: block;"
+                  style="width: 188px; margin-bottom: 8px; display: block"
                   @change="
                     (e) =>
                       setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -192,7 +197,7 @@
                     <span
                       v-if="
                         'nu' === removeAccents(searchText).toLowerCase() &&
-                          searchText.toLowerCase() !== 'nam'
+                        searchText.toLowerCase() !== 'nam'
                       "
                       :key="i"
                       class="highlight"
@@ -205,12 +210,8 @@
                   </template>
                 </span>
                 <template v-else>
-                  <span v-if="text">
-                    Nam
-                  </span>
-                  <span v-else>
-                    Nữ
-                  </span>
+                  <span v-if="text"> Nam </span>
+                  <span v-else> Nữ </span>
                 </template>
               </template>
               <template #dobCustom="item">
@@ -287,12 +288,8 @@
                   name="radioGroup"
                   :default-value="1"
                 >
-                  <a-radio :value="1">
-                    Male
-                  </a-radio>
-                  <a-radio :value="0">
-                    Female
-                  </a-radio>
+                  <a-radio :value="1"> Male </a-radio>
+                  <a-radio :value="0"> Female </a-radio>
                 </a-radio-group>
               </a-col>
             </a-row>
@@ -442,9 +439,7 @@
             </a-row>
 
             <a-row :gutter="[24, 16]">
-              <a-col :span="8">
-                Lớp
-              </a-col>
+              <a-col :span="8"> Lớp </a-col>
               <a-col :span="16">
                 <a-select
                   v-model="editForm.classID"
@@ -595,12 +590,8 @@
                   name="radioGroup"
                   :default-value="1"
                 >
-                  <a-radio :value="1">
-                    Male
-                  </a-radio>
-                  <a-radio :value="0">
-                    Female
-                  </a-radio>
+                  <a-radio :value="1"> Male </a-radio>
+                  <a-radio :value="0"> Female </a-radio>
                 </a-radio-group>
               </a-col>
             </a-row>
@@ -747,9 +738,7 @@
             </a-row>
 
             <a-row :gutter="[24, 16]">
-              <a-col :span="8">
-                Lớp
-              </a-col>
+              <a-col :span="8"> Lớp </a-col>
               <a-col :span="16">
                 <a-select
                   v-model="addForm.classID"
@@ -773,6 +762,44 @@
             </a-row>
           </a-spin>
         </a-modal>
+
+        <a-modal
+          v-model="showModal.import"
+          title="Thêm danh sách học sinh"
+          on-ok="handleOk"
+        >
+          <template slot="footer">
+            <a-button key="back" @click="handleCancelImport">
+              Trở lại
+            </a-button>
+            <!-- <a-button
+              key="submit"
+              type="primary"
+              :loading="loading"
+              @click="handleOkImport"
+            >
+              Đồng ý
+            </a-button> -->
+          </template>
+          <a-button
+            key="submit"
+            type="primary"
+            :loading="loading"
+            :default-file-list="fileList"
+            :file-list="fileList"
+            @click="handleExportTemplate"
+          >
+            Tải tệp tin mẫu
+          </a-button>
+          <a-upload
+            name="file"
+            :multiple="false"
+            :action="apiUrl"
+            :headers="headers"
+          >
+            <a-button> <a-icon type="upload" /> Tải lên danh sách học sinh </a-button>
+          </a-upload>
+        </a-modal>
       </div>
     </div>
   </div>
@@ -782,11 +809,12 @@ import UserRepository from "../api/user.js";
 import ClassRepository from "../api/class.js";
 import LocationRepository from "../api/location.js";
 import moment from "moment";
-
+import CONFIG from "../config/index.js";
 const defaultModalState = {
   add: false,
   edit: false,
   changePassword: false,
+  import: false,
 };
 
 const defaultForm = {
@@ -817,6 +845,11 @@ const defaultInputErrors = {
 export default {
   data() {
     return {
+      fileList: [],
+      headers: {
+        authorization: "Bearer " + this.$cookies.get("accessToken"),
+      },
+      apiUrl: `${CONFIG.apiUrl}/api/user/import`,
       userInfor: {
         username: "",
         fullName: "",
@@ -1059,6 +1092,30 @@ export default {
     this.getUserInfor();
   },
   methods: {
+    handleExportTemplate() {
+      UserRepository.exportTemplate().then((res) => {
+        console.log(res,"response");
+        const headers = res.headers;
+
+        const blob = new Blob([res.data], { type: headers['content-type'] })
+
+        const link = document.createElement('a')
+
+        link.href = URL.createObjectURL(blob)
+
+        link.download = "Danh sách học sinh.xlsx"
+
+        link.click()
+      });
+    },
+    handleCancelImport() {
+      this.showModal.import = false;
+      this.fileList = [];
+    },
+    handleOkImport() {},
+    openImportForm() {
+      this.showModal.import = true;
+    },
     cleaderLocation() {
       this.districtList = [];
       this.wardList = [];
@@ -1287,16 +1344,18 @@ export default {
         confirmPassword: this.changePassForm.rePasswordChanged,
       };
       console.log("changePasswordForm ===>", changePasswordForm);
-      UserRepository.changePasswordByUsername(changePasswordForm).then(res => {
-        if (res.data.success) {
-          this.loadingModal = false;
-          this.$notification.success({
-            message: "Đặt lại mật khẩu thành công!"
-          });
-          this.closeModal();
-          this.loadingModal = false;
+      UserRepository.changePasswordByUsername(changePasswordForm).then(
+        (res) => {
+          if (res.data.success) {
+            this.loadingModal = false;
+            this.$notification.success({
+              message: "Đặt lại mật khẩu thành công!",
+            });
+            this.closeModal();
+            this.loadingModal = false;
+          }
         }
-      });
+      );
     },
     closeEditForm() {
       this.selectedItem = null;
@@ -1311,7 +1370,7 @@ export default {
       this.changePassForm = {
         username: "",
         passwordChanged: "",
-        rePasswordChanged: ""
+        rePasswordChanged: "",
       };
       this.cleaderLocation();
     },
