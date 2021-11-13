@@ -1,5 +1,5 @@
 const config = {
-  apiUrl: "https://back-end-health.herokuapp.com:46068",
+  apiUrl: "https://back-end-health.herokuapp.com",
   CLIENT_URL: "https://front-end-health.herokuapp.com:8080",
   SCREEN_CODE: {
     ROLE_MANAGEMENT: "ROLE_MANAGEMENT",
