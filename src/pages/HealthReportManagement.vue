@@ -102,6 +102,7 @@
                 :columns="columns"
                 :data-source="listUser"
                 :pagination="false"
+                :row-class-name="tableRowClassName"
                 :scroll="{ x: 1500, y: 800 }"
               >
                 <div
@@ -246,6 +247,7 @@
                   show-quick-jumper
                   :default-current="1"
                   :total="total"
+                  :defaultPageSize="20"
                   @change="paginate"
                 />
               </div>
@@ -1000,6 +1002,11 @@ export default {
       this.listTrackingReport = [];
       this.currentTrackingReport = null;
     },
+    tableRowClassName(record) {
+      if (record.userName === "hieppv4") {
+        return "f0-row";
+      }
+    },
   },
 };
 </script>
@@ -1007,5 +1014,11 @@ export default {
 .allow-report {
   padding-top: 3px;
   padding-left: 10px;
+}
+</style>
+<style >
+.f0-row {
+  background-color: red !important;
+  color :white
 }
 </style>

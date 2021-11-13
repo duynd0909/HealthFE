@@ -81,8 +81,11 @@ export async function checkLogin(next, objectTypeCode) {
 export async function checkLoginViewReport(next) {
   let check = await checkToken();
   if (check) {
-    check = await checkPermissionViewReport();
-    if (!check) {
+    let check2 = await checkPermissionViewReport();
+    let role = Vue.$cookies.get("role");
+    if (role === "HIEU_TRUONG") {
+      next();
+    } else if (!check2) {
       next("/forbidden");
     } else {
       next();

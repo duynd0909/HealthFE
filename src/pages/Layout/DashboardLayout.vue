@@ -16,7 +16,7 @@
           <p>Dashboard</p>
         </template>
       </sidebar-link> -->
-      <sidebar-link to="/health-report" v-if="allowViewReport">
+      <sidebar-link to="/health-report" v-if="allowViewReport || role === 'HIEU_TRUONG'">
         <a-icon type="snippets" />
         <template>
           <p>Quản lý khai báo</p>
@@ -85,6 +85,7 @@ export default {
     return {
       backgroundColor: "green",
       allowViewReport: false,
+      role : this.$cookies.get("role")
     };
   },
   computed: {
@@ -96,7 +97,7 @@ export default {
     },
   },
   created() {
-    // this.checkPermissionViewReport()
+     this.checkPermissionViewReport()
   },
   methods: {
     toggleSidebar() {
