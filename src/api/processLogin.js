@@ -8,6 +8,8 @@ export function checkPermission(objectTypeCode, view) {
   if (objectTypeCode) {
     const accessRole = CONFIG.DISPLAY_SCREEN_MAP[objectTypeCode];
     const userRole = Vue.$cookies.get("role");
+    console.log("accessRole ===>", accessRole);
+    console.log("userRole ===>", userRole);
     if (userRole && accessRole.includes(userRole)) {
       return true;
     }

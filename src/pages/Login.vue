@@ -57,7 +57,7 @@
   </section>
 </template>
 <script>
-import { BaseInput, Card } from "@/components/index";
+import { Card } from "@/components/index";
 import { basicProcessLogins } from "../api/processLogin";
 import axios from "axios";
 import Vue from "vue";
@@ -77,7 +77,6 @@ const defaultFormAddUser = {
 export default {
   components: {
     Card,
-    BaseInput,
   },
   data() {
     return {
@@ -111,11 +110,17 @@ export default {
       errorLogin: "",
     };
   },
+  created() {
+    var isLogout = this.$route.params.isLogout;
+    if (isLogout) {
+      this.basicLogout();
+    }
+  },
   mounted() {
-    this.$cookies.remove("accessToken");
-    this.$cookies.remove("username");
-    this.$cookies.remove("role");
-    this.$cookies.remove("class");
+    // this.$cookies.remove("accessToken");
+    // this.$cookies.remove("username");
+    // this.$cookies.remove("role");
+    // this.$cookies.remove("class");
   },
   methods: {
     async basicLogout() {
@@ -123,7 +128,6 @@ export default {
         this.contentLoading = "Đang đăng xuất...";
         this.loading = true;
         await processLogout().then(() => {
-          this.loading = false;
           this.$cookies.remove("accessToken");
           this.$cookies.remove("username");
           this.$cookies.remove("role");
@@ -131,11 +135,11 @@ export default {
           window.location.reload();
         });
       } else {
-        this.loading = false;
         this.$cookies.remove("accessToken");
         this.$cookies.remove("username");
         this.$cookies.remove("role");
         this.$cookies.remove("class");
+        this.loading = false;
       }
     },
     async basicLogin() {
@@ -156,7 +160,12 @@ export default {
             Vue.$cookies.set("role", userInfo.roleCode, expiredTime);
             Vue.$cookies.set("class", userInfo.classID, expiredTime);
 
-            this.$router.push("home-page");
+            if (this.$route.params.isLogout) {
+              this.$router.push("../home-page");
+            } else {
+              this.$router.push("home-page");
+            }
+
             this.loading = false;
           } else {
             this.errorLogin = "Username or password is incorrect!";

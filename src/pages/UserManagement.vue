@@ -5,59 +5,7 @@
         <template slot="header">
           <h4 class="card-title">Student Management</h4>
         </template>
-
-        <div class="header-filter-custom text-left">
-          <a-form>
-            <a-row type="flex" justify="space-between">
-              <a-col class="gutter-box" :span="4">
-                <a-form-item label="Lớp" has-feedback>
-                  <a-select
-                    v-model="formDataSearch.classID"
-                    class="filter-select"
-                    :disabled="checkShowClass"
-                    placeholder="~Chọn lớp học~"
-                    style="width: 100%"
-                    @search="fetchClass"
-                    @change="searchUser"
-                  >
-                    <a-select-option
-                      v-for="item in classList"
-                      :key="item.id"
-                      :value="item.id"
-                    >
-                      {{ item.className }}
-                    </a-select-option>
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col class="gutter-box" :span="4">
-                <a-form-item label="Giáo viên chủ nhiệm" has-feedback>
-                  <span v-if="teacherInfo && teacherInfo.fullName">
-                    {{ teacherInfo.fullName }}
-                  </span>
-                </a-form-item>
-              </a-col>
-              <a-col class="gutter-box" :span="4">
-                <a-form-item label="Sĩ số" has-feedback>
-                  <span v-if="totals">
-                    {{ totals }}
-                  </span>
-                </a-form-item>
-              </a-col>
-              <a-col class="gutter-box custom-button-header" :span="4">
-                <base-button type="primary" @click="openAddForm()"
-                  >Thêm học sinh</base-button
-                >
-              </a-col>
-              <a-col class="gutter-box custom-button-header" :span="1">
-                <base-button type="primary" @click="openImportForm()"
-                  >Thêm danh sách học sinh</base-button
-                >
-              </a-col>
-            </a-row>
-          </a-form>
-        </div>
-        <div class="text-left">
+        <div class="table-responsive-class text-left">
           <a-spin :spinning="loading">
             <a-icon
               type="loading"
@@ -65,169 +13,239 @@
               style="font-size: 24px"
               spin
             />
-            <a-table
-              :data-source="data"
-              :columns="columns"
-              :scroll="{ x: 1500 }"
-              :pagination="false"
-            >
-              <div
-                slot="filterDropdown"
-                slot-scope="{
-                  setSelectedKeys,
-                  selectedKeys,
-                  confirm,
-                  clearFilters,
-                  column,
-                }"
-                style="padding: 8px"
-              >
-                <a-input
-                  v-ant-ref="(c) => (searchInput = c)"
-                  :value="selectedKeys[0]"
-                  style="width: 188px; margin-bottom: 8px; display: block"
-                  @change="
-                    (e) =>
-                      setSelectedKeys(e.target.value ? [e.target.value] : [])
-                  "
-                  @pressEnter="
-                    () => handleSearch(selectedKeys, column.dataIndex)
-                  "
-                />
-                <a-button
-                  type="primary"
-                  icon="search"
-                  size="small"
-                  style="width: 90px; margin-right: 8px"
-                  @click="() => handleSearch(selectedKeys, column.dataIndex)"
-                >
-                  Tìm
-                </a-button>
-                <a-button
-                  size="small"
-                  style="width: 90px"
-                  @click="() => handleReset(column.dataIndex, clearFilters)"
-                >
-                  Xóa
-                </a-button>
-              </div>
-              <a-icon
-                slot="filterIcon"
-                slot-scope="filtered"
-                type="search"
-                :style="{ color: filtered ? '#108ee9' : undefined }"
-              />
-              <template
-                slot="customRender"
-                slot-scope="text, record, index, column"
-              >
-                <span v-if="searchText && searchedColumn === column.dataIndex">
-                  <template
-                    v-for="(fragment, i) in text
-                      .toString()
-                      .split(
-                        new RegExp(`(?<=${searchText})|(?=${searchText})`, 'i')
-                      )"
-                  >
-                    <span
-                      v-if="checkContainSearchKey(fragment, searchText)"
-                      :key="i"
-                      class="highlight"
-                      >{{ fragment }}</span
-                    >
-                    <template v-else>{{ fragment }}</template>
-                  </template>
-                </span>
-                <template v-else>
-                  {{ text }}
-                </template>
-              </template>
-              <template #action="item">
-                <a-dropdown>
-                  <a-menu slot="overlay">
-                    <a-menu-item key="1" @click="handleEditItemBtnClick(item)">
-                      Sửa
-                    </a-menu-item>
-
-                    <a-menu-item key="2">
-                      <a-popconfirm
-                        placement="leftBottom"
-                        ok-text="Có"
-                        cancel-text="Không"
-                        @confirm="deleteSubItemBtnClick(item)"
+            <div class="header-filter-custom text-left">
+              <a-form>
+                <a-row type="flex" justify="space-between">
+                  <a-col class="gutter-box" :span="4">
+                    <a-form-item label="Lớp" has-feedback>
+                      <a-select
+                        v-model="formDataSearch.classID"
+                        class="filter-select"
+                        :disabled="checkShowClass"
+                        placeholder="~Chọn lớp học~"
+                        style="width: 100%"
+                        @search="fetchClass"
+                        @change="searchUser"
                       >
-                        <template slot="title">
-                          <span
-                            >Ban có chắc chắn muốn xóa học sinh này không?</span
-                          ><br />
-                        </template>
-                        Xóa
-                      </a-popconfirm>
-                    </a-menu-item>
-
-                    <a-menu-item
-                      key="3"
-                      @click="handleResetPasswordItemBtnClick(item)"
+                        <a-select-option
+                          v-for="item in classList"
+                          :key="item.id"
+                          :value="item.id"
+                        >
+                          {{ item.className }}
+                        </a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                  <a-col class="gutter-box" :span="4">
+                    <a-form-item label="Giáo viên chủ nhiệm" has-feedback>
+                      <span v-if="teacherInfo && teacherInfo.fullName">
+                        {{ teacherInfo.fullName }}
+                      </span>
+                    </a-form-item>
+                  </a-col>
+                  <a-col class="gutter-box" :span="4">
+                    <a-form-item label="Sĩ số" has-feedback>
+                      <span v-if="totals">
+                        {{ totals }}
+                      </span>
+                    </a-form-item>
+                  </a-col>
+                  <a-col class="gutter-box custom-button-header" :span="4">
+                    <base-button type="primary" @click="openAddForm()"
+                      >Thêm học sinh</base-button
                     >
-                      Đặt lại mât khấu
-                    </a-menu-item>
-                  </a-menu>
-                  <a-button> <a-icon type="down" /> </a-button>
-                </a-dropdown>
-              </template>
-              <template slot="gender" slot-scope="text, record, index, column">
-                <span v-if="searchText && searchedColumn === column.dataIndex">
-                  <template
-                    v-for="(fragment, i) in text
-                      .toString()
-                      .split(
-                        new RegExp(`(?<=${searchText})|(?=${searchText})`, 'i')
-                      )"
+                  </a-col>
+                  <a-col class="gutter-box custom-button-header" :span="1">
+                    <base-button type="primary" @click="openImportForm()"
+                      >Thêm danh sách học sinh</base-button
+                    >
+                  </a-col>
+                </a-row>
+              </a-form>
+            </div>
+            <div class="text-left">
+              <a-table
+                :data-source="data"
+                :columns="columns"
+                :scroll="{ x: 1500 }"
+                :pagination="false"
+              >
+                <div
+                  slot="filterDropdown"
+                  slot-scope="{
+                    setSelectedKeys,
+                    selectedKeys,
+                    confirm,
+                    clearFilters,
+                    column,
+                  }"
+                  style="padding: 8px"
+                >
+                  <a-input
+                    v-ant-ref="(c) => (searchInput = c)"
+                    :value="selectedKeys[0]"
+                    style="width: 188px; margin-bottom: 8px; display: block"
+                    @change="
+                      (e) =>
+                        setSelectedKeys(e.target.value ? [e.target.value] : [])
+                    "
+                    @pressEnter="
+                      () => handleSearch(selectedKeys, column.dataIndex)
+                    "
+                  />
+                  <a-button
+                    type="primary"
+                    icon="search"
+                    size="small"
+                    style="width: 90px; margin-right: 8px"
+                    @click="() => handleSearch(selectedKeys, column.dataIndex)"
                   >
-                    <span
-                      v-if="'nam' === searchText.toLowerCase()"
-                      :key="i"
-                      class="highlight"
+                    Tìm
+                  </a-button>
+                  <a-button
+                    size="small"
+                    style="width: 90px"
+                    @click="() => handleReset(column.dataIndex, clearFilters)"
+                  >
+                    Xóa
+                  </a-button>
+                </div>
+                <a-icon
+                  slot="filterIcon"
+                  slot-scope="filtered"
+                  type="search"
+                  :style="{ color: filtered ? '#108ee9' : undefined }"
+                />
+                <template
+                  slot="customRender"
+                  slot-scope="text, record, index, column"
+                >
+                  <span
+                    v-if="searchText && searchedColumn === column.dataIndex"
+                  >
+                    <template
+                      v-for="(fragment, i) in text
+                        .toString()
+                        .split(
+                          new RegExp(
+                            `(?<=${searchText})|(?=${searchText})`,
+                            'i'
+                          )
+                        )"
                     >
-                      Nam
-                    </span>
-                    <!-- <template v-else>
-                      Nam
-                    </template> -->
-                    <span
-                      v-if="
-                        'nu' === removeAccents(searchText).toLowerCase() &&
-                        searchText.toLowerCase() !== 'nam'
-                      "
-                      :key="i"
-                      class="highlight"
-                    >
-                      Nữ
-                    </span>
-                    <!-- <template v-else-if="searchText.toLowerCase() !== 'nam'">
-                      Nữ
-                    </template> -->
+                      <span
+                        v-if="checkContainSearchKey(fragment, searchText)"
+                        :key="i"
+                        class="highlight"
+                        >{{ fragment }}</span
+                      >
+                      <template v-else>{{ fragment }}</template>
+                    </template>
+                  </span>
+                  <template v-else>
+                    {{ text }}
                   </template>
-                </span>
-                <template v-else>
-                  <span v-if="text"> Nam </span>
-                  <span v-else> Nữ </span>
                 </template>
-              </template>
-              <template #dobCustom="item">
-                <span>{{ generateTime(item.dob) }}</span>
-              </template>
-            </a-table>
+                <template #action="item">
+                  <a-dropdown>
+                    <a-menu slot="overlay">
+                      <a-menu-item
+                        key="1"
+                        @click="handleEditItemBtnClick(item)"
+                      >
+                        Sửa
+                      </a-menu-item>
+
+                      <a-menu-item key="2">
+                        <a-popconfirm
+                          placement="leftBottom"
+                          ok-text="Có"
+                          cancel-text="Không"
+                          @confirm="deleteSubItemBtnClick(item)"
+                        >
+                          <template slot="title">
+                            <span
+                              >Ban có chắc chắn muốn xóa học sinh này
+                              không?</span
+                            ><br />
+                          </template>
+                          Xóa
+                        </a-popconfirm>
+                      </a-menu-item>
+
+                      <a-menu-item
+                        key="3"
+                        @click="handleResetPasswordItemBtnClick(item)"
+                      >
+                        Đặt lại mât khấu
+                      </a-menu-item>
+                    </a-menu>
+                    <a-button> <a-icon type="down" /> </a-button>
+                  </a-dropdown>
+                </template>
+                <template
+                  slot="gender"
+                  slot-scope="text, record, index, column"
+                >
+                  <span
+                    v-if="searchText && searchedColumn === column.dataIndex"
+                  >
+                    <template
+                      v-for="(fragment, i) in text
+                        .toString()
+                        .split(
+                          new RegExp(
+                            `(?<=${searchText})|(?=${searchText})`,
+                            'i'
+                          )
+                        )"
+                    >
+                      <span
+                        v-if="'nam' === searchText.toLowerCase()"
+                        :key="i"
+                        class="highlight"
+                      >
+                        Nam
+                      </span>
+                      <!-- <template v-else>
+                      Nam
+                    </template> -->
+                      <span
+                        v-if="
+                          'nu' === removeAccents(searchText).toLowerCase() &&
+                            searchText.toLowerCase() !== 'nam'
+                        "
+                        :key="i"
+                        class="highlight"
+                      >
+                        Nữ
+                      </span>
+                      <!-- <template v-else-if="searchText.toLowerCase() !== 'nam'">
+                      Nữ
+                    </template> -->
+                    </template>
+                  </span>
+                  <template v-else>
+                    <span v-if="text"> Nam </span>
+                    <span v-else> Nữ </span>
+                  </template>
+                </template>
+                <template #dobCustom="item">
+                  <span>{{ generateTime(item.dob) }}</span>
+                </template>
+              </a-table>
+            </div>
+            <div class="gutter-example pt-md pagnigation-custom">
+              <a-pagination
+                v-model="current"
+                show-quick-jumper
+                :default-current="1"
+                :total="totals"
+                @change="paginate"
+              />
+            </div>
           </a-spin>
-        </div>
-        <div class="gutter-example pt-md pagnigation-custom">
-          <a-pagination
-            v-model="current"
-            show-quick-jumper
-            :default-current="1"
-            :total="totals"
-            @change="paginate"
-          />
         </div>
 
         <!-- edit modal -->
@@ -797,7 +815,9 @@
             :action="apiUrl"
             :headers="headers"
           >
-            <a-button> <a-icon type="upload" /> Tải lên danh sách học sinh </a-button>
+            <a-button>
+              <a-icon type="upload" /> Tải lên danh sách học sinh
+            </a-button>
           </a-upload>
         </a-modal>
       </div>
@@ -1094,18 +1114,18 @@ export default {
   methods: {
     handleExportTemplate() {
       UserRepository.exportTemplate().then((res) => {
-        console.log(res,"response");
+        console.log(res, "response");
         const headers = res.headers;
 
-        const blob = new Blob([res.data], { type: headers['content-type'] })
+        const blob = new Blob([res.data], { type: headers["content-type"] });
 
-        const link = document.createElement('a')
+        const link = document.createElement("a");
 
-        link.href = URL.createObjectURL(blob)
+        link.href = URL.createObjectURL(blob);
 
-        link.download = "Danh sách học sinh.xlsx"
+        link.download = "Danh sách học sinh.xlsx";
 
-        link.click()
+        link.click();
         this.$notification.success({
           message :" Thêm danh sách học sinh thành công !!!"
         })
@@ -1125,8 +1145,8 @@ export default {
       this.wardList = [];
     },
     getUserInfor() {
+      this.loading = true;
       var username = this.$cookies.get("username");
-      var roleCode = this.$cookies.get("role");
       UserRepository.getUserByUsername(username).then((res) => {
         if (res.data.data) {
           var classOfTeacher =
@@ -1140,18 +1160,23 @@ export default {
             classID: classOfTeacher,
           };
           this.checkShowClassMethod(this.userInfor);
+          this.loading = true;
         }
       });
     },
     checkShowClassMethod(userInfor) {
       var parsedobj = JSON.parse(JSON.stringify(userInfor));
+      this.loading = true;
+      console.log("parsedobj ===>", parsedobj);
       if (
         parsedobj.roleCode === "HIEU_TRUONG" ||
         parsedobj.roleCode === "HIEU_PHO"
       ) {
         this.checkShowClass = false;
+        this.loading = false;
       } else {
         this.checkShowClass = true;
+        this.searchUser();
       }
     },
     checkContainSearchKey(fragment, searchText) {

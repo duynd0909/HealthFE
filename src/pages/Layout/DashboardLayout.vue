@@ -22,22 +22,22 @@
           <p>Quản lý khai báo</p>
         </template>
       </sidebar-link>
-      <sidebar-link to="/class-management">
+      <sidebar-link to="/class-management" v-if="allowClassManagement">
         <i class="tim-icons icon-bank"></i>
         <template>
           <p>Quản lý lớp học</p>
         </template>
       </sidebar-link>
-      <sidebar-link to="/user-management">
-        <i class="tim-icons icon-single-02"></i>
-        <template>
-          <p>Quản lý học sinh</p>
-        </template>
-      </sidebar-link>
-      <sidebar-link to="/teacher-management">
+      <sidebar-link to="/teacher-management" v-if="allowTeacherManagement">
         <i class="tim-icons icon-single-02"></i>
         <template>
           <p>Quản lý giáo viên</p>
+        </template>
+      </sidebar-link>
+      <sidebar-link to="/user-management" v-if="allowStudentManagement">
+        <i class="tim-icons icon-single-02"></i>
+        <template>
+          <p>Quản lý học sinh</p>
         </template>
       </sidebar-link>
       <sidebar-link to="/change-password">
@@ -46,7 +46,7 @@
           <p>Đổi mật khẩu</p>
         </template>
       </sidebar-link>
-      <sidebar-link to="/login">
+      <sidebar-link to="/login/true">
         <a-icon type="logout" />
         <template>
           <p>Đăng xuất</p>
@@ -85,6 +85,9 @@ export default {
     return {
       backgroundColor: "green",
       allowViewReport: false,
+      allowClassManagement: false,
+      allowTeacherManagement: false,
+      allowStudentManagement: false,
       role : this.$cookies.get("role")
     };
   },
@@ -97,6 +100,17 @@ export default {
     },
   },
   created() {
+    var roleCode = this.$cookies.get("role");
+    if (roleCode) {
+      if (roleCode === "HIEU_TRUONG" || roleCode === "HIEU_PHO") {
+        this.allowClassManagement = true;
+        this.allowTeacherManagement = true;
+        this.allowStudentManagement = true;
+      } else if (roleCode === "GIAO_VIEN_CHU_NHIEM") {
+        this.allowStudentManagement = true;
+      }
+    }
+    // this.checkPermissionViewReport()
      this.checkPermissionViewReport()
   },
   methods: {

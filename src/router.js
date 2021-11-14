@@ -45,7 +45,7 @@ const router = [
         component: ChangePassword
       },
       {
-        path: "login",
+        path: "login/:isLogout?",
         name: "Đăng nhập",
         component: Login
       },
@@ -73,7 +73,10 @@ const router = [
       {
         path: "teacher-management",
         name: "Quản lý giáo viên",
-        component: TeacherManagement
+        component: TeacherManagement,
+        beforeEnter: async (to, from, next) => {
+          await checkLogin(next, CONFIG.SCREEN_CODE.TEACHER_MANAGEMENT);
+        },
       },
       {
         path: "icons",
