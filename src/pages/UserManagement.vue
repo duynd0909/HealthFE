@@ -1160,7 +1160,7 @@ export default {
             classID: classOfTeacher,
           };
           this.checkShowClassMethod(this.userInfor);
-          this.loading = true;
+          this.loading = false;
         }
       });
     },
@@ -1230,7 +1230,6 @@ export default {
       );
     },
     searchUser() {
-      this.loading = true;
       if (this.formDataSearch.genderSearch === null) {
         this.data = [];
         this.totals = 0;
@@ -1245,6 +1244,7 @@ export default {
         this.formDataSearch.classID = this.userInfor.classID;
       }
       if (this.formDataSearch.classID) {
+              this.loading = true;
         UserRepository.searchUser(this.formDataSearch, 1)
           .then((res) => {
             if (res.data.success) {
