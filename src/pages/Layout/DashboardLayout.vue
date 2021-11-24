@@ -16,7 +16,10 @@
           <p>Dashboard</p>
         </template>
       </sidebar-link> -->
-      <sidebar-link to="/health-report" v-if="allowViewReport || role === 'HIEU_TRUONG'">
+      <sidebar-link
+        to="/health-report"
+        v-if="allowViewReport || role === 'HIEU_TRUONG'"
+      >
         <a-icon type="snippets" />
         <template>
           <p>Quản lý khai báo</p>
@@ -53,7 +56,6 @@
         </template>
       </sidebar-link>
     </side-bar>
-    <sidebar-share :background-color.sync="backgroundColor"></sidebar-share>
 
     <div class="main-panel" :data="backgroundColor">
       <top-navbar></top-navbar>
@@ -88,7 +90,7 @@ export default {
       allowClassManagement: false,
       allowTeacherManagement: false,
       allowStudentManagement: false,
-      role : this.$cookies.get("role")
+      role: this.$cookies.get("role"),
     };
   },
   computed: {
@@ -110,8 +112,7 @@ export default {
         this.allowStudentManagement = true;
       }
     }
-    // this.checkPermissionViewReport()
-     this.checkPermissionViewReport()
+    this.checkPermissionViewReport();
   },
   methods: {
     toggleSidebar() {
@@ -119,8 +120,8 @@ export default {
         this.$sidebar.displaySidebar(false);
       }
     },
-    checkPermissionViewReport() {
-      this.allowViewReport = checkPermissionViewReport();
+    async checkPermissionViewReport() {
+      this.allowViewReport = await checkPermissionViewReport();
     },
   },
 };

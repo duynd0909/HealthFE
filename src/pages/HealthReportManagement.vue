@@ -105,128 +105,6 @@
                 :row-class-name="tableRowClassName"
                 :scroll="{ x: 1500, y: 800 }"
               >
-                <div
-                  slot="filterDropdown"
-                  slot-scope="{
-                    setSelectedKeys,
-                    selectedKeys,
-                    clearFilters,
-                    column,
-                  }"
-                  style="padding: 8px"
-                >
-                  <a-input
-                    v-ant-ref="(c) => (searchInput = c)"
-                    :value="selectedKeys[0]"
-                    style="width: 188px; margin-bottom: 8px; display: block"
-                    @change="
-                      (e) =>
-                        setSelectedKeys(e.target.value ? [e.target.value] : [])
-                    "
-                    @pressEnter="
-                      () => handleSearch(selectedKeys, column.dataIndex)
-                    "
-                  />
-                  <a-button
-                    type="primary"
-                    icon="search"
-                    size="small"
-                    style="width: 90px; margin-right: 8px"
-                    @click="() => handleSearch(selectedKeys, column.dataIndex)"
-                  >
-                    Tìm
-                  </a-button>
-                  <a-button
-                    size="small"
-                    style="width: 90px"
-                    @click="() => handleReset(column.dataIndex, clearFilters)"
-                  >
-                    Xóa
-                  </a-button>
-                </div>
-                <a-icon
-                  slot="filterIcon"
-                  slot-scope="filtered"
-                  type="search"
-                  :style="{ color: filtered ? '#108ee9' : undefined }"
-                />
-                <template
-                  slot="customRender"
-                  slot-scope="text, record, index, column"
-                >
-                  <span
-                    v-if="searchText && searchedColumn === column.dataIndex"
-                  >
-                    <template
-                      v-for="(fragment, i) in text
-                        .toString()
-                        .split(
-                          new RegExp(
-                            `(?<=${searchText})|(?=${searchText})`,
-                            'i'
-                          )
-                        )"
-                    >
-                      <span
-                        v-if="checkContainSearchKey(fragment, searchText)"
-                        :key="i"
-                        class="highlight"
-                        >{{ fragment }}</span
-                      >
-                      <template v-else>{{ fragment }}</template>
-                    </template>
-                  </span>
-                  <template v-else>
-                    {{ text }}
-                  </template>
-                </template>
-                <template
-                  slot="gender"
-                  slot-scope="text, record, index, column"
-                >
-                  <span
-                    v-if="searchText && searchedColumn === column.dataIndex"
-                  >
-                    <template
-                      v-for="(fragment, i) in text
-                        .toString()
-                        .split(
-                          new RegExp(
-                            `(?<=${searchText})|(?=${searchText})`,
-                            'i'
-                          )
-                        )"
-                    >
-                      <span
-                        v-if="'nam' === searchText.toLowerCase()"
-                        :key="i"
-                        class="highlight"
-                      >
-                        Nam
-                      </span>
-                      <!-- <template v-else>
-                      Nam
-                    </template> -->
-                      <span
-                        v-if="
-                          'nu' === removeAccents(searchText).toLowerCase() &&
-                          searchText.toLowerCase() !== 'nam'
-                        "
-                        :key="i"
-                        class="highlight"
-                      >
-                        Nữ
-                      </span>
-                      <!-- <template v-else-if="searchText.toLowerCase() !== 'nam'">
-                      Nữ
-                    </template> -->
-                    </template>
-                  </span>
-                  <template v-else>
-                    <span v-if="text"> Nam </span>
-                    <span v-else> Nữ </span>
-                  </template>
-                </template>
                 <template #dobCustom="item">
                   <span>{{ generateTime(item.dob) }}</span>
                 </template>
@@ -807,16 +685,12 @@ const columns = [
 ];
 const columnsHealthReport = [];
 const defaultSearchForm = {
-  id: undefined,
   fullName: "",
-  dob: "2000-01-01",
-  gender: 1,
-  phoneNumber: "",
-  parentPhoneNumber: "",
-  provinceCode: undefined,
-  districtCode: undefined,
-  wardCode: undefined,
-  addressDetail: "",
+  genderSearch: "",
+  wardName: "",
+  districtName: "",
+  provinceName: "",
+  userName: "",
   classID: undefined,
 };
 const defaultUpdateAllowViewReportForm = {
@@ -858,6 +732,7 @@ export default {
       searchText: "",
       teacherInfor: {},
       userRole: this.$cookies.get("role"),
+      searchInput: null,
     };
   },
   created() {
@@ -869,6 +744,64 @@ export default {
     this.fetchClass("");
   },
   methods: {
+    checkContainSearchKey(fragment, searchText) {
+      if (
+        this.removeAccents(fragment).toLowerCase() ===
+        this.removeAccents(searchText).toLowerCase()
+      ) {
+        return true;
+      }
+      return false;
+    },
+    removeAccents(str) {
+      var AccentsMap = [
+        "aàảãáạăằẳẵắặâầẩẫấậ",
+        "AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬ",
+        "dđ",
+        "DĐ",
+        "eèẻẽéẹêềểễếệ",
+        "EÈẺẼÉẸÊỀỂỄẾỆ",
+        "iìỉĩíị",
+        "IÌỈĨÍỊ",
+        "oòỏõóọôồổỗốộơờởỡớợ",
+        "OÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢ",
+        "uùủũúụưừửữứự",
+        "UÙỦŨÚỤƯỪỬỮỨỰ",
+        "yỳỷỹýỵ",
+        "YỲỶỸÝỴ",
+      ];
+      for (var i = 0; i < AccentsMap.length; i++) {
+        var re = new RegExp("[" + AccentsMap[i].substr(1) + "]", "g");
+        var char = AccentsMap[i][0];
+        str = str.replace(re, char);
+      }
+      return str;
+    },
+    handleSearch(selectedKeys, dataIndex) {
+      this.searchText = selectedKeys[0];
+      this.searchedColumn = dataIndex;
+      if (dataIndex === "fullName") {
+        this.formDataSearch.fullName = selectedKeys[0];
+      } else if (dataIndex === "gender") {
+        var genderSearchKey = this.removeAccents(selectedKeys[0]);
+        if (selectedKeys[0] == "Nam" || selectedKeys[0] == "nam") {
+          this.searchForm.genderSearch = true;
+        } else if (genderSearchKey === "Nu" || genderSearchKey === "nu") {
+          this.searchForm.genderSearch = false;
+        } else {
+          this.searchForm.genderSearch = null;
+        }
+      } else if (dataIndex === "wardName") {
+        this.searchForm.wardName = selectedKeys[0];
+      } else if (dataIndex === "districtName") {
+        this.searchForm.districtName = selectedKeys[0];
+      } else if (dataIndex === "provinceName") {
+        this.searchForm.provinceName = selectedKeys[0];
+      } else if (dataIndex === "userName") {
+        this.searchForm.userName = selectedKeys[0];
+      }
+      this.getListUser();
+    },
     getTrackingReportByUsername(username) {
       TrackingReportRepository.getTrackingReportByUsername(username).then(
         (res) => {
@@ -1003,8 +936,12 @@ export default {
       this.currentTrackingReport = null;
     },
     tableRowClassName(record) {
-      if (record.userName === "hieppv4") {
-        return "f0-row";
+      if (record.factorGroup) {
+        if (record.factorGroup.includes("F0")) {
+          return "f0-row";
+        } else if (record.factorGroup.includes("F1")) {
+          return "f1-row";
+        }
       }
     },
   },
@@ -1019,6 +956,10 @@ export default {
 <style >
 .f0-row {
   background-color: red !important;
-  color :white
+  color: white;
+}
+.f1-row {
+  background-color: orange !important;
+  color: white;
 }
 </style>

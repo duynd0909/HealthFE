@@ -1,6 +1,6 @@
 const config = {
-  apiUrl: "https://back-end-health.herokuapp.com",
-  CLIENT_URL: "https://front-end-health.herokuapp.com",
+  apiUrl: "http://healthdeclare.hipe.com.vn:8181",
+  CLIENT_URL: "http://healthdeclare.hipe.com.vn:8080",
   SCREEN_CODE: {
     ROLE_MANAGEMENT: "ROLE_MANAGEMENT",
     ADMIN_ACTION: "ADMIN_ACTION",
@@ -12,7 +12,7 @@ const config = {
   PERMISSION_SCREEN_MAP: {
     UserRoleManagement: "ROLE_MANAGEMENT",
   },
-  LOGIN_URL: "https://front-end-health.herokuapp.com/authenticate",
+  LOGIN_URL: "http://healthdeclare.hipe.com.vn:8080/authenticate",
   DISPLAY_SCREEN_MAP: {
     ADMIN_ACTION: "HIEU_TRUONG,HIEU_PHO,GIAO_VIEN_CHU_NHIEM",
     USER_MANAGEMENT: "HIEU_TRUONG,HIEU_PHO,GIAO_VIEN_CHU_NHIEM",

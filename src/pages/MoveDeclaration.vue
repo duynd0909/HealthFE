@@ -666,6 +666,7 @@
                 type="primary"
                 html-type="submit"
                 :disabled="!showButtonSubmit"
+                :loading="loading"
               >
                 Gửi tờ khai
               </a-button>
@@ -839,26 +840,32 @@ export default {
       });
     },
     handleSubmit(e) {
+      this.loading = true;
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           console.log("Received values of form: ", values);
+          this.loading = false;
           this.submitHealthReport(values);
         }
       });
     },
     submitHealthReport(form) {
+      this.loading = true;
       TrackingRepository.add(form)
         .then((res) => {
           this.$notification.success({
             message: "Khai báo di chuyển thành công!",
           });
+          this.loading = false;
+          this.$router.push("home-page");
         })
         .catch((err) => {
           this.$notification.console.error();
           ({
             message: "Khai báo di chuyển thất bại!",
           });
+          this.loading = false;
         });
     },
     handleConfirmBlur(e) {

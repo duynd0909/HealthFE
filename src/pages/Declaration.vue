@@ -411,6 +411,7 @@
                 border-radius: 25px !important;
                 background-color: #1fc45c;
               "
+              :loading="loading"
             >
               Gửi tờ khai
             </a-button>
@@ -431,6 +432,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       fetchedData: {
         listProvince: [],
         listDistrict: [],
@@ -548,26 +550,32 @@ export default {
       });
     },
     handleSubmit(e) {
+      this.loading = true;
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           console.log("Received values of form: ", values);
+          this.loading = false;
           this.submitHealthReport(values);
         }
       });
     },
     submitHealthReport(form) {
+      this.loading = true;
       HealthRepository.add(form)
         .then((res) => {
           this.$notification.success({
             message: "Khai báo y tế thành công!",
           });
+          this.loading = false;
+          this.$router.push("home-page");
         })
         .catch((err) => {
           this.$notification.console.error();
           ({
             message: "Khai báo y tế thất bại!",
           });
+          this.loading = false;
         });
     },
     handleConfirmBlur(e) {
