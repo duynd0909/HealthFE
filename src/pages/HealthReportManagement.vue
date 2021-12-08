@@ -937,9 +937,10 @@ export default {
     },
     tableRowClassName(record) {
       if (record.factorGroup) {
-        if (record.factorGroup.includes("F0")) {
+        const listFactor = record.factorGroup.split(",");
+        if (listFactor[listFactor.length-1] === "F0") {
           return "f0-row";
-        } else if (record.factorGroup.includes("F1")) {
+        } else if (listFactor[listFactor.length-1] === "F1") {
           return "f1-row";
         }
       }
